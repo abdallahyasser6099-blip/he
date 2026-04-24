@@ -13,7 +13,7 @@ This repository currently includes the authentication foundation and a deploymen
 - Doctor and patient roles
 - Protected routes with middleware and server-side role checks
 - Doctor-managed patient account creation
-- PostgreSQL-ready environment configuration for Vercel and Neon/Supabase
+- PostgreSQL-ready environment configuration for Render or any PostgreSQL host
 
 ## Local Setup
 
@@ -76,29 +76,39 @@ Open `http://localhost:3000`.
 - `DIRECT_URL` should use a direct connection for Prisma schema operations.
 - Patient creation is doctor-controlled to preserve secure onboarding.
 
-## Deploy To Vercel
+## Deploy To Render
 
-1. Push the repository to GitHub.
-2. Import the repository into Vercel.
-3. In Vercel Project Settings, add these environment variables:
+This repo includes a `render.yaml` blueprint so Render can create the web service and PostgreSQL database from GitHub.
 
-   - `DATABASE_URL`
-   - `DIRECT_URL`
-   - `AUTH_SECRET`
-   - `AUTH_TRUST_HOST=true`
-   - `AUTH_URL=https://your-project-domain.vercel.app`
+1. Open Render and connect your GitHub account.
+2. Create a new Blueprint deployment from this repository.
+3. Render will create:
 
-4. Deploy the project.
-5. After the first deploy, run the database sync once from a machine with access to the database:
+   - a web service for the Next.js app
+   - a PostgreSQL database
+   - generated environment variables for the app
+
+4. Set `AUTH_URL` to your final Render domain after the service URL is created.
+5. After the first deploy, run the database sync and seed once:
 
    ```bash
    npx prisma db push
    npm run prisma:seed
    ```
 
-## GitHub To Production Flow
+## Manual Render Environment Variables
+
+If you prefer creating the Render services manually, add these environment variables to the web service:
+
+   - `DATABASE_URL`
+   - `DIRECT_URL`
+   - `AUTH_SECRET`
+   - `AUTH_TRUST_HOST=true`
+   - `AUTH_URL=https://your-service-name.onrender.com`
+
+## GitHub To Production Flow On Render
 
 1. Push code to GitHub.
-2. Connect the GitHub repo in Vercel.
-3. Add the production environment variables in Vercel.
-4. Redeploy after setting the variables.
+2. Connect the GitHub repo in Render.
+3. Deploy with the included `render.yaml` blueprint or create the web service manually.
+4. Add `AUTH_URL` after the Render URL is assigned.

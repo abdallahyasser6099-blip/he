@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: healix-app
+    runtime: node
+    plan: free
+    repo: https://github.com/abdallahyasser6099-blip/he
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DATABASE_URL
+        fromDatabase:
+          name: healix-postgres
+          property: connectionString
+      - key: DIRECT_URL
+        fromDatabase:
+          name: healix-postgres
+          property: connectionString
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: AUTH_TRUST_HOST
+        value: "true"
+      - key: AUTH_URL
+        sync: false
+
+databases:
+  - name: healix-postgres
+    plan: free
+    databaseName: healix
+    user: healix_user
