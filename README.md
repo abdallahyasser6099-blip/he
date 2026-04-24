@@ -14,6 +14,7 @@ This repository currently includes the authentication foundation and a deploymen
 - Protected routes with middleware and server-side role checks
 - Doctor-managed patient account creation
 - PostgreSQL-ready environment configuration for Render or any PostgreSQL host
+- Railway-ready standalone Next.js deployment setup
 
 ## Local Setup
 
@@ -112,3 +113,46 @@ If you prefer creating the Render services manually, add these environment varia
 2. Connect the GitHub repo in Render.
 3. Deploy with the included `render.yaml` blueprint or create the web service manually.
 4. Add `AUTH_URL` after the Render URL is assigned.
+
+## Recommended Deploy Option: Railway
+
+Railway is a better fit for this HEALIX app when you want one place to run the web app and PostgreSQL with less setup.
+
+Why Railway fits well:
+
+- official guide support for Next.js + Postgres from a GitHub repo
+- PostgreSQL can be added inside the same Railway project
+- this repo now uses Next.js `output: "standalone"`, which Railway's guide recommends for self-hosted Next.js
+
+## Deploy To Railway
+
+1. Open Railway.
+2. Create a new project.
+3. Choose `Deploy from GitHub repo`.
+4. Select `abdallahyasser6099-blip/he`.
+5. Add a PostgreSQL database inside the same Railway project.
+6. In your web service variables, set:
+
+   - `DATABASE_URL` as a reference to the PostgreSQL service `DATABASE_URL`
+   - `DIRECT_URL` as the same PostgreSQL connection string if you want the simplest setup
+   - `AUTH_SECRET` as a long random string
+   - `AUTH_TRUST_HOST=true`
+
+7. Generate a public domain from Railway Networking.
+8. Set:
+
+   - `AUTH_URL=https://your-railway-domain`
+
+9. Redeploy the service.
+10. Run once after deployment:
+
+   ```bash
+   npx prisma db push
+   npm run prisma:seed
+   ```
+
+## Railway Notes
+
+- Railway's official Next.js guide says to use standalone output and a custom start command for self-hosted Next.js.
+- Railway's official Postgres guide supports adding PostgreSQL directly to the same project.
+- If you want stricter production database changes later, switch from `db push` to `prisma migrate deploy`.
